@@ -58,15 +58,26 @@ class FileScanner:
                     continue
                 
                 if os.path.isdir(path):
-                    if os.path.exists(os.path.join(path, '__init__.py')):
-                        # This is a package
-                        # Register as namespace.package
-                        package_name = f"{namespace}.{item}" if namespace else item
+                    has_init = os.path.exists(os.path.join(path, '__init__.py'))
+                    # This is a package (either regular or namespace)
+                    # Register as namespace.package
+                    package_name = f"{namespace}.{item}" if namespace else item
+                    
+                    if has_init:
+                        # Regular package with __init__.py
                         init_path = os.path.join(path, '__init__.py')
                         self.registry.register(package_name, init_path, is_package=True)
-                        
-                        # Now scan the contents of this directory
-                        self._scan_package_directory(path, package_name)
+                    else:
+                        # Check if it should be a namespace package (has .py files or subdirectories)
+                        if self._is_valid_namespace_package(path):
+                            # Namespace package without __init__.py
+                            self.registry.register(package_name, path, is_package=True, is_namespace_package=True)
+                        else:
+                            # Not a valid package or namespace package
+                            continue
+                    
+                    # Now scan the contents of this directory
+                    self._scan_package_directory(path, package_name)
                 
                 elif item.endswith('.py') and item != '__init__.py':
                     # Handle Python modules at the top level
@@ -93,14 +104,25 @@ class FileScanner:
                 
                 if os.path.isdir(path):
                     # Handle directories (potentially packages)
-                    if os.path.exists(os.path.join(path, '__init__.py')):
-                        # This is a package
+                    has_init = os.path.exists(os.path.join(path, '__init__.py'))
+                    
+                    if has_init:
+                        # This is a regular package with __init__.py
                         package_name = f"{namespace}.{item}"
                         init_path = os.path.join(path, '__init__.py')
                         self.registry.register(package_name, init_path, is_package=True)
-                        
-                        # Scan subdirectory with updated namespace
-                        self._scan_package_directory(path, package_name)
+                    else:
+                        # Check if it should be a namespace package (has .py files)
+                        if self._is_valid_namespace_package(path):
+                            # This is a namespace package without __init__.py
+                            package_name = f"{namespace}.{item}"
+                            self.registry.register(package_name, path, is_package=True, is_namespace_package=True)
+                        else:
+                            # Not a valid package or namespace package
+                            continue
+                    
+                    # Scan subdirectory with updated namespace
+                    self._scan_package_directory(path, f"{namespace}.{item}")
                 
                 elif item.endswith('.py') and item != '__init__.py':
                     # Handle Python modules
@@ -208,3 +230,38 @@ class FileScanner:
                 return True
                 
         return False
+    
+    def _is_valid_namespace_package(self, directory):
+        """
+        Check if a directory should be considered a namespace package.
+        
+        A directory is a valid namespace package if it:
+        1. Has at least one .py file inside, or
+        2. Has at least one subdirectory that contains Python modules
+        
+        Args:
+            directory (str): Directory to check
+            
+        Returns:
+            bool: True if the directory should be a namespace package
+        """
+        try:
+            for item in os.listdir(directory):
+                path = os.path.join(directory, item)
+                
+                if self._should_ignore(path):
+                    continue
+                
+                # If it has Python files, it's a valid namespace package
+                if item.endswith('.py'):
+                    return True
+                
+                # If it has subdirectories with Python files, it's a valid namespace package
+                if os.path.isdir(path):
+                    for subitem in os.listdir(path):
+                        if subitem.endswith('.py') or subitem == '__init__.py':
+                            return True
+            
+            return False
+        except (PermissionError, FileNotFoundError):
+            return False

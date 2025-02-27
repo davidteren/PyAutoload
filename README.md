@@ -14,6 +14,7 @@ PyAutoload aims to eliminate the cognitive overhead of managing imports in Pytho
 - **Lazy loading**: Only loads modules when they're first accessed, perfect for development
 - **File watching**: Automatically reloads modules when files change during development
 - **Seamless integration**: Works with Python's import system using `importlib`
+- **PEP 420 support**: Handles namespace packages (directories without `__init__.py` files)
 
 ## Installation
 
@@ -56,12 +57,23 @@ myapp/
 ├── controllers/
 │   ├── __init__.py
 │   └── users_controller.py # Contains the UsersController class
+├── lib/                   # Namespace package (no __init__.py)
+│   └── helpers.py         # Contains utility functions
 └── services/
     ├── __init__.py
     ├── user_service.py     # Contains the UserService class
     └── auth/
         ├── __init__.py
         └── authentication_service.py # Contains the AuthenticationService class
+```
+
+### Namespace Packages
+
+PyAutoload supports PEP 420 namespace packages, which are directories without `__init__.py` files. This allows for a more flexible module structure and compatibility with modern Python projects:
+
+```python
+# This works even though 'lib' has no __init__.py file
+from myapp.lib.helpers import format_date
 ```
 
 ## Customizing Inflection

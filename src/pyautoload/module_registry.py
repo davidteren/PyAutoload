@@ -23,7 +23,7 @@ class ModuleRegistry:
         self._modules = {}
         self._lock = threading.RLock()
     
-    def register(self, module_name, filepath, is_package=False):
+    def register(self, module_name, filepath, is_package=False, is_namespace_package=False):
         """
         Register a module in the registry.
         
@@ -31,11 +31,13 @@ class ModuleRegistry:
             module_name (str): Full name of the module (e.g., "app.models.user")
             filepath (str): Absolute path to the module's file
             is_package (bool): Whether this module is a package
+            is_namespace_package (bool): Whether this is a PEP 420 namespace package
         """
         with self._lock:
             self._modules[module_name] = {
                 'path': filepath,
                 'is_package': is_package,
+                'is_namespace_package': is_namespace_package,
                 'loaded': False,
                 'mtime': None,
                 'dependencies': set(),
@@ -111,6 +113,24 @@ class ModuleRegistry:
             if module_name not in self._modules:
                 raise KeyError(f"Module '{module_name}' is not registered")
             return self._modules[module_name]['is_package']
+    
+    def is_namespace_package(self, module_name):
+        """
+        Check if a module is a PEP 420 namespace package.
+        
+        Args:
+            module_name (str): Full name of the module
+            
+        Returns:
+            bool: True if the module is a namespace package, False otherwise
+            
+        Raises:
+            KeyError: If the module is not registered
+        """
+        with self._lock:
+            if module_name not in self._modules:
+                raise KeyError(f"Module '{module_name}' is not registered")
+            return self._modules[module_name].get('is_namespace_package', False)
     
     def is_loaded(self, module_name):
         """

@@ -70,10 +70,20 @@ class PyAutoloadFinder(importlib.abc.MetaPathFinder):
         try:
             filepath = self.registry.get_path(fullname)
             is_package = self.registry.is_package(fullname)
+            is_namespace_package = self.registry.is_namespace_package(fullname)
         except KeyError:
             return None
         
-        # Create a loader
+        # If it's a namespace package, create a namespace package spec
+        if is_namespace_package:
+            return self._create_pep420_namespace_package_spec(fullname, filepath)
+        
+        # Special case: if the filepath is None but it's a package, 
+        # we need to create a virtual package (parent namespace package)
+        if filepath is None and is_package:
+            return self._create_namespace_package_spec(fullname)
+        
+        # Create a loader for regular modules and packages
         loader = PyAutoloadLoader(fullname, filepath, self.registry)
         
         # Create a spec with our custom loader
@@ -140,6 +150,28 @@ class PyAutoloadFinder(importlib.abc.MetaPathFinder):
                     paths.append(path)
         
         spec.submodule_search_locations = paths if paths else [None]
+        return spec
+    
+    def _create_pep420_namespace_package_spec(self, fullname, dirpath):
+        """
+        Create a PEP 420 namespace package spec.
+        
+        Args:
+            fullname (str): Full name of the module
+            dirpath (str): Path to the directory for the namespace package
+            
+        Returns:
+            ModuleSpec: Spec for the namespace package
+        """
+        spec = importlib.machinery.ModuleSpec(
+            name=fullname,
+            loader=None,  # Namespace packages have no loader
+            is_package=True
+        )
+        
+        # Set the submodule_search_locations to the directory path
+        spec.submodule_search_locations = [dirpath]
+        
         return spec
     
     def invalidate_caches(self):
