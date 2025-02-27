@@ -85,11 +85,7 @@ def main():
     check_distribution()
 
     # Confirm before uploading
-    if args.test:
-        target = "TestPyPI"
-    else:
-        target = "PyPI"
-
+    target = "TestPyPI" if args.test else "PyPI"
     confirm = input(f"\nReady to upload to {target}. Continue? [y/N] ")
     if confirm.lower() != 'y':
         print("Upload canceled.")
