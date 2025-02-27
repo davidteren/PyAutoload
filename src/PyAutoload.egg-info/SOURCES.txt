@@ -8,8 +8,16 @@ src/PyAutoload.egg-info/requires.txt
 src/PyAutoload.egg-info/top_level.txt
 src/pyautoload/__init__.py
 src/pyautoload/autoloader.py
+src/pyautoload/file_scanner.py
 src/pyautoload/file_watcher.py
+src/pyautoload/import_hooks.py
+src/pyautoload/import_parser.py
 src/pyautoload/inflector.py
+src/pyautoload/module_registry.py
 tests/test_autoloader.py
+tests/test_dependency_tracking.py
 tests/test_file_watcher.py
+tests/test_import_hooks.py
 tests/test_inflector.py
+tests/test_integration.py
+tests/test_module_registry.py
