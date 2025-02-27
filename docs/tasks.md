@@ -1,4 +1,4 @@
-# Tasks
+* Tasks
 
 1. **Set up project structure**:
    - Create directories, initialize Git, set up virtual environment.

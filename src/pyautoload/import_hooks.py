@@ -5,10 +5,13 @@ This module implements the custom meta path finder and loader for PyAutoload.
 """
 import os
 import sys
+import importlib
 import importlib.abc
 import importlib.machinery
+import importlib.util
 from .inflector import Inflector
 from .module_registry import ModuleRegistry
+from .import_parser import get_imports_from_code, calculate_dependencies
 
 
 class PyAutoloadFinder(importlib.abc.MetaPathFinder):
@@ -194,9 +197,19 @@ class PyAutoloadLoader(importlib.abc.Loader):
             
         # Compile and execute the module
         code = compile(source, self.filepath, 'exec')
+        
+        # Track dependencies before execution
+        imports = get_imports_from_code(source, filename=self.filepath)
+        dependencies = calculate_dependencies(self.fullname, imports, self.registry)
+        
+        # Execute the module code
         exec(code, module.__dict__)
         
-        # Update the registry
+        # Update the registry with dependencies
+        for dependency in dependencies:
+            self.registry.add_dependency(self.fullname, dependency)
+        
+        # Mark the module as loaded
         self.registry.mark_loaded(self.fullname, os.path.getmtime(self.filepath))
 
 
@@ -209,7 +222,7 @@ class ModuleNotFoundError(AutoloadError):
     """Raised when a module is not found in the registry."""
     pass
     
-    
+
 class CircularDependencyError(AutoloadError):
-    """Raised when a circular dependency is detected."""
+    """Raised when a circular dependency is detected during module loading."""
     pass

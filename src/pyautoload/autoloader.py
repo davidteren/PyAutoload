@@ -11,7 +11,7 @@ from .inflector import Inflector
 from .file_watcher import FileWatcher
 from .file_scanner import FileScanner
 from .module_registry import ModuleRegistry
-from .import_hooks import PyAutoloadFinder, PyAutoloadLoader, AutoloadError
+from .import_hooks import PyAutoloadFinder, PyAutoloadLoader, AutoloadError, CircularDependencyError
 
 
 class AutoLoader:
@@ -171,12 +171,11 @@ class AutoLoader:
         if not self.registry.contains(module_name):
             return
             
-        # Get all dependent modules that need to be reloaded
-        dependents = self.registry.get_dependents(module_name)
-        all_modules = [module_name] + dependents
+        # Get all modules that need to be reloaded using a topological sort
+        modules_to_reload = self._get_dependent_modules_in_order(module_name)
         
         # Unload all modules in reverse dependency order
-        for mod_name in reversed(all_modules):
+        for mod_name in reversed(modules_to_reload):
             if mod_name in sys.modules:
                 # Remove from sys.modules
                 del sys.modules[mod_name]
@@ -184,11 +183,37 @@ class AutoLoader:
                 self.registry.mark_unloaded(mod_name)
         
         # Reload the modules in correct dependency order
-        for mod_name in all_modules:
+        for mod_name in modules_to_reload:
             try:
                 importlib.import_module(mod_name)
             except Exception as e:
                 print(f"Error reloading module {mod_name}: {e}")
+    
+    def _get_dependent_modules_in_order(self, module_name):
+        """
+        Get a list of modules that depend on the given module, in topologically sorted order.
+        
+        Args:
+            module_name (str): Name of the module to check
+            
+        Returns:
+            list: Ordered list of modules to reload
+        """
+        visited = set()
+        modules_in_order = []
+        
+        def visit(name):
+            if name in visited:
+                return
+            visited.add(name)
+            for dependent in self.registry.get_dependents(name):
+                visit(dependent)
+            modules_in_order.append(name)
+            
+        # Start with the specified module
+        visit(module_name)
+        
+        return modules_in_order
     
     def reload(self):
         """Reload all modules that have been modified."""

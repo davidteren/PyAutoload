@@ -3,6 +3,7 @@ from pyautoload.inflector import Inflector
 from pyautoload.file_watcher import FileWatcher
 from pyautoload.module_registry import ModuleRegistry
 from pyautoload.file_scanner import FileScanner
+from pyautoload.import_parser import get_imports_from_file, get_imports_from_code
 from pyautoload.import_hooks import (
     PyAutoloadFinder,
     PyAutoloadLoader,
@@ -24,4 +25,6 @@ __all__ = [
     'AutoloadError',
     'ModuleNotFoundError',
     'CircularDependencyError',
+    'get_imports_from_file',
+    'get_imports_from_code',
 ]
