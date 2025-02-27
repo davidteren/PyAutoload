@@ -84,11 +84,43 @@ loader = AutoLoader(base_path="myapp", top_level="myapp", inflector=inflector)
 
 ## Development Status
 
-PyAutoload is currently in early development. We're following a test-driven development approach to ensure reliability and correctness.
+PyAutoload is currently in alpha development. We're following a test-driven development approach to ensure reliability and correctness.
+
+### Alpha Release v0.1.0-alpha.1
+
+This alpha release includes:
+
+- Basic autoloading functionality
+- Module registry for tracking loaded modules
+- Dependency tracking between modules
+- Automatic reloading of modules and their dependencies
+- File watching during development
+
+We encourage Python developers to try PyAutoload and provide feedback through:
+- GitHub issues for bugs and feature requests
+- GitHub discussions for general feedback and questions
+
+### Feedback Wanted
+
+We're especially interested in feedback on:
+
+1. Usability of the API
+2. Integration with different project structures
+3. Performance on larger codebases
+4. Compatibility with different Python versions
+5. Interactions with other libraries and frameworks
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+See our [contribution guidelines](CONTRIBUTING.md) for more details.
 
 ## License
 
