@@ -15,16 +15,15 @@ class TestAutoLoader:
         """Test that the autoloader can be initialized with valid parameters."""
         loader = AutoLoader(base_path="dummy", top_level="dummy")
         assert loader is not None
-        assert loader.base_path == "dummy"
+        assert os.path.basename(loader.base_paths[0]) == "dummy"
         assert loader.top_level == "dummy"
 
     def test_autoloader_validate_parameters(self):
         """Test that the autoloader validates its parameters."""
+        # We should validate that setup() raises ValueError when no base paths are provided
+        loader = AutoLoader()
         with pytest.raises(ValueError):
-            AutoLoader(base_path=None, top_level="dummy")
-        
-        with pytest.raises(ValueError):
-            AutoLoader(base_path="dummy", top_level=None)
+            loader.setup()
 
     def test_discovery(self, sample_project):
         """Test that the autoloader can discover modules."""
