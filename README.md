@@ -1,6 +1,6 @@
 # PyAutoload
 
-A Python autoloading library inspired by Ruby's Zeitwerk, designed to simplify module importing through convention over configuration.
+A Python autoloading library inspired by Ruby's [Zeitwerk](https://github.com/fxn/zeitwerk), designed to simplify module importing through convention over configuration.
 
 ## Introduction
 
