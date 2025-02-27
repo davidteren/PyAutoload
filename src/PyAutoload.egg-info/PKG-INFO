@@ -1,0 +1,52 @@
+Metadata-Version: 2.2
+Name: PyAutoload
+Version: 0.1
+Summary: A Python autoloading library inspired by Zeitwerk.
+Home-page: [Project URL]
+Author: [Your Name]
+Author-email: [Your Email]
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: watchdog
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# PyAutoload
+
+A Python autoloading library inspired by Zeitwerk.
+
+## Introduction
+
+PyAutoload simplifies module loading in Python by providing an autoloading mechanism that automatically discovers and loads modules based on directory structure and naming conventions.
+
+## Features
+
+- Automatic module discovery
+- Convention-based naming
+- Eager and lazy loading modes
+- File watching for development
+
+## Usage
+
+```python
+from pyautoload import AutoLoader
+
+loader = AutoLoader(base_path="myapp", top_level="myapp")
+loader.discover()
+
+# Modules can now be imported normally
+import myapp.subdir.module
+```
+
+For more details, see the [documentation](docs/).

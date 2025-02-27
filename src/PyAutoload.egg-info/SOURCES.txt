@@ -1,0 +1,15 @@
+LICENSE
+README.md
+setup.py
+src/PyAutoload.egg-info/PKG-INFO
+src/PyAutoload.egg-info/SOURCES.txt
+src/PyAutoload.egg-info/dependency_links.txt
+src/PyAutoload.egg-info/requires.txt
+src/PyAutoload.egg-info/top_level.txt
+src/pyautoload/__init__.py
+src/pyautoload/autoloader.py
+src/pyautoload/file_watcher.py
+src/pyautoload/inflector.py
+tests/test_autoloader.py
+tests/test_file_watcher.py
+tests/test_inflector.py
