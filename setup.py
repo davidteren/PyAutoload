@@ -7,7 +7,7 @@ setup(
     package_dir={'': 'src'},
     install_requires=['watchdog>=3.0.0'],
     author='David Teren',
-    author_email='example@example.com',
+    author_email='drteren@gmail.com',
     description='A Python autoloading library inspired by Zeitwerk.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
